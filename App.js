@@ -12,15 +12,52 @@ class Product {
 
 //Paso # 4 clase para crear interfaz de usuario
 class UI {
-    addProduct() {
+    addProduct(product) {
+        const productList = document.getElementById('product-list')
+        const element = document.createElement('div')
+//Lo que va arrojar el HTML.
+        element.innerHTML = `
+            <div class="card text-center mb-4">
+                <div class="card-body">
+                    <strong>Product</strong>: ${product.name}
+                    <strong> Price</strong>: ${product.price}
+                    <strong> Year</strong>: ${product.year}
+                    <a href="#" class="btn btn-danger" name="delete">Delete</a>
+                </div>
+            </div>
+        `;
+        productList.appendChild(element);
+        
+    }
+
+    resetForm() {
+        document.getElementById('product-form').reset();
 
     }
 
-    deleteProduct() {
-
+    deleteProduct(element) {
+        if(element.name === 'delete'){
+            element.parentElement.parentElement.parentElement.remove();
+            this.showMessage('Product Deleted Succesfully', 'info')
+        }
     }
 
-    showMessage() {
+    showMessage(message, cssClass) {
+// Crear un elemento HTML o un div 
+        const div = document.createElement('div');
+// Le asignamos una clase
+        div.className = `alert alert-${cssClass} mt-4`;
+        div.appendChild(document.createTextNode(message))
+// Enviamos el mensaje en el DOM
+        const container = document.querySelector('.container');
+        const app = document.querySelector('#App');
+        container.insertBefore(div, app);
+// metodo para temporalizar el mensaje 
+        setTimeout(function(){
+            document.querySelector('.alert').remove();
+        }, 2000)
+
+
 
     }
 }
@@ -36,8 +73,26 @@ document.getElementById('product-form').addEventListener('submit', function(e) {
 
     
     const product = new Product(name, price, year);
-    
+
+    const ui = new UI();
+
+//Validacion de datos
+    if(name === '' || price === '' || year === ''){
+// El return para que no agregue mas elementos agregados
+        return ui.showMessage('Complete Fields Please', 'danger');
+    }
+
+//Ejecucion de eventos de UI
+    ui.addProduct(product);
+    ui.resetForm();
+    ui.showMessage('Product Added Succesfully', 'success');
 //Para cancelar el efecto submit de resfresh
     e.preventDefault();
 
+});
+
+//Evento Delete Product
+document.getElementById('product-list').addEventListener('click',function(e){
+    const ui = new UI();
+    ui.deleteProduct(e.target);
 })
